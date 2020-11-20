@@ -54,8 +54,8 @@ transformed parameters {
   
 model {
   
-  target += normal_lpdf(beta| 0, 10); // prior for the discrimination parameter
-  target += normal_lpdf(alpha| 0, 10); // Prior for the difficulty parameter
+  target += normal_lpdf(beta| 0, 5); // prior for the discrimination parameter
+  target += normal_lpdf(alpha| 0, 5); // Prior for the difficulty parameter
   target += cauchy_lpdf(sigma| 0, 2.5); 
   target += exponential_lpdf(time_var| 10); // Prior for the time 
   target += normal_lpdf(theta| 0, 1);
