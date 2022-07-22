@@ -1,0 +1,37 @@
+
+
+data {
+  int<lower=1> N; // Number of observation. (for parties)
+  int<lower=1> I; // Number of items (same for parties and cantons)
+  int<lower=1> J; // Number of Actors
+  int<lower=0, upper=1> y[N]; // list of outcome (binary for parties)
+  int<lower=1> i[N]; // list of items 
+  int<lower=1> j[N]; // list of actors
+}
+
+
+parameters {
+  vector[I] alpha; // Difficulty parameter 
+  vector[I] beta;  // Discrimination parameter
+  vector[J] theta;  // ideal position of actor j at time t;
+}
+
+transformed parameters {
+  vector[N] p_binary; 
+  
+  for (n in 1:N) {
+    p_binary[n] = inv_logit(theta[j[n]] * beta[i[n]] + alpha[i[n]]); // Define the parameter in this block. Helps with the computation issues.
+  }
+  
+}
+
+
+model {
+  beta ~ normal(0, 5); // Prior for the discrimination of items
+  alpha ~ normal(0, 5); // Prior for the difficulty of items
+  
+  theta ~ std_normal();
+  
+  y ~ bernoulli(p_binary);
+}
+
