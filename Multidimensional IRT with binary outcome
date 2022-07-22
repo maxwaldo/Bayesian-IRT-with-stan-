@@ -1,0 +1,41 @@
+
+
+data {
+  int<lower=1> N; // Number of observation. (for parties)
+  int<lower=1> I; // Number of items (same for parties and cantons)
+  int<lower=1> J; // Number of Actors
+  int<lower=1> D; // Number of dimension
+  int<lower=0, upper=1> y[N]; // list of outcome (binary for parties)
+  int<lower=1> i[N]; // list of items 
+  int<lower=1> j[N]; // list of actors
+  // if the question items belong only to one dimension, possible to define a d variable with the dimension the observation is in. 
+}
+
+
+parameters {
+  vector[I] alpha; // Difficulty parameter 
+  vector[I] beta[D];  // Discrimination parameter in the dimension d;
+  vector[J] theta[D];  // ideal position of actor j in the dimension d;
+}
+
+transformed parameters {
+  vector[N] p_binary; 
+  
+  for (n in 1:N) {
+    p_binary[n] = inv_logit(theta[1, j[n]] * beta[1, i[n]] + theta[2, j[n]] * beta[2, i[n]] + alpha[i[n]]); // Define the parameter in this block. Helps with the computation issues.
+  } // Exemple with two dimensions, but can be expended!
+  
+}
+
+
+model {
+  beta ~ normal(0, 5); // Prior for the discrimination of items
+  alpha ~ normal(0, 5); // Prior for the difficulty of items
+  
+  theta ~ std_normal(); 
+  
+  // Don't forget to fixe the ideological dimensions with more strict priors. 
+  
+  y ~ bernoulli(p_binary);
+}
+
